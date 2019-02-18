@@ -1,0 +1,19 @@
+import requests
+
+def check_status():
+
+try:
+ 
+    with open('WEBSITES.txt','r') as urls:
+    
+        for url in urls.readlines():
+            req = url.strip()
+            page=requests.get(req)
+            res = page.status_code
+            print(url+" "+str(res)+"\n")
+
+except:
+    print("The site is down! Please try again")
+    
+def main(event,context):
+    check_status()
