@@ -7,9 +7,11 @@ try:
             req = url.strip()
             page=requests.get(req)
             res = page.status_code
-            print(url+" "+str(res)+"\n")
+            if res == 200:
+                print(url+' Site is Up!')
+            elif res == 404:
+                print(url+' Site Not Found')
+            else:
+                print(url+' Site is down! please try again')
 except:
-    print("The site is down! Please try again")
-    
-def main(event,context):
-    check_status()
+    print("Please verify the url once")
