@@ -1,1 +1,61 @@
+import email
+import imaplib
+from bs4 import BeautifulSoup
+import os
+import mimetypes
+import datetime
 
+#Replace Email Id and Password
+username = '<ReplaceMe>@gmail.com'
+password = '<ReplaceMe>'
+
+#Gmail can be accessed via IMAP and the Python Standard Library has an IMAP interface.
+#First step is to create an IMAP4 instance, preferably the SSL variant for security, connected to the Gmail server at imap.gmail.com
+mail = imaplib.IMAP4_SSL("imap.gmail.com")
+
+#Attept to Login
+mail.login(username,password)
+
+#to open one of the mailboxes, call select()
+#we can now get the emails within it
+#for example, we can get all the emails in the selected mailbox and for each one output the message number, subject, and date.
+mail.select("inbox")
+
+#We use the search() method to get a list of message sequence numbers, then loop over these.
+result, data = mail.uid('search',None,"ALL")
+
+inbox_item_ist = data[0].split()
+
+#message_from_string() returns a message object, and we can then access header items as a dictionary on that object.
+#The message body can be obtained by calling part.get_payload(), which will return the payload data as a string (if the message is not multi-part)
+
+for item in inbox_item_ist:
+    result2, email_data = mail.uid('fetch',item,'(RFC822)')
+    raw_email = email_data[0][1].decode("utf-8")
+    email_message = email.message_from_string(raw_email)  #
+    to_ = email_message['To']
+    from_ = email_message['From']
+    subject_ = email_message['Subject']
+    date_ = email_message['date']
+    counter=1
+    for part in email_message.walk():
+        if part.get_content_maintype() == "multipart":
+            continue
+        filename = part.get_filename()
+        content_type = part.get_content_type()
+        if not filename:
+            ext = mimetypes.guess_extension(content_type)
+            if not ext:
+                ext = '.bin'
+            if 'text' in content_type:
+                ext = '.txt'
+            elif 'html' in content_type:
+                ext = '.html'
+            filename = 'msg-part-%08d%s' %(counter,ext)
+        counter += 1
+    save_path = os.path.join(os.getcwd(),"emails",date_, subject_)
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
+    with open(os.path.join(save_path, filename), 'wb') as fp:
+        fp.write(part.get_payload(decode=True))
+        
