@@ -1,0 +1,19 @@
+import numpy as np
+
+n, m = map(int, input().split())
+
+def create_array(i):
+    li = []
+    for _ in range(i):
+        li.append(list(map(int, input().split())))
+    return np.array(liste)
+
+a = create_array(n)
+b = create_array(n)
+
+print(a+b)
+print(a-b)
+print(a*b)
+print(a//b)
+print(a%b)
+print(a**b)
