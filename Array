@@ -6,7 +6,7 @@ def create_array(i):
     li = []
     for _ in range(i):
         li.append(list(map(int, input().split())))
-    return np.array(liste)
+    return np.array(li)
 
 a = create_array(n)
 b = create_array(n)
